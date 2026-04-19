@@ -1,0 +1,22 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "AZURE_ENVIRONMENT": "dev"
+  },
+  "AppSettings": {
+    "KeyVaultUri": "",
+    "SystemApiBaseUrl": "https://example-system-api.azure-api.net",
+    "SystemApiSubscriptionKey": "",
+    "SystemApiVersion": "v1",
+    "B2BTenantId": "",
+    "B2BTenantAuthorityUrl": "https://login.microsoftonline.com/your-tenant-id",
+    "B2BClientId": "",
+    "B2BClientSecret": "",
+    "BlobEndpoint": "https://example.blob.core.windows.net",
+    "BlobContainerName": "experience",
+    "ManagedIdentityClientId": "",
+    "CacheKeySystemApi": "SystemApiToken"
+  }
+}

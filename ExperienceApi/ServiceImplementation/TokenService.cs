@@ -1,0 +1,42 @@
+using ExperienceApi.Contracts;
+using ExperienceApi.Model;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Identity.Client;
+
+namespace ExperienceApi.ServiceImplementation;
+
+public class TokenService : ITokenService
+{
+    private readonly IMemoryCache _memoryCache;
+
+    public TokenService(IMemoryCache memoryCache)
+    {
+        _memoryCache = memoryCache;
+    }
+
+    public async Task<string> GetTokenAsync(ClientRequestModel model)
+    {
+        if (model is null)
+        {
+            throw new ArgumentNullException(nameof(model));
+        }
+
+        if (_memoryCache.TryGetValue(model.CacheKey, out string? cachedToken) && !string.IsNullOrWhiteSpace(cachedToken))
+        {
+            return cachedToken;
+        }
+
+        IConfidentialClientApplication app = ConfidentialClientApplicationBuilder
+            .Create(model.ClientId)
+            .WithClientSecret(model.Secret)
+            .WithAuthority(model.AuthorityUrl)
+            .Build();
+
+        var authResult = await app.AcquireTokenForClient(new[] { model.Scope }).ExecuteAsync();
+        var token = authResult.AccessToken;
+
+        _memoryCache.Set(model.CacheKey, token, authResult.ExpiresOn - DateTimeOffset.UtcNow - TimeSpan.FromMinutes(5));
+
+        return token;
+    }
+}
