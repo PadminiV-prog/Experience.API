@@ -1,0 +1,16 @@
+{
+  "AppSettings": {
+    "KeyVaultUri": "",
+    "SystemApiBaseUrl": "https://dev-system-api.azure-api.net",
+    "SystemApiSubscriptionKey": "",
+    "SystemApiVersion": "v1",
+    "B2BTenantId": "",
+    "B2BTenantAuthorityUrl": "https://login.microsoftonline.com/{dev-tenant-id}",
+    "B2BClientId": "",
+    "B2BClientSecret": "",
+    "BlobEndpoint": "https://devstorage.blob.core.windows.net",
+    "BlobContainerName": "experience-dev",
+    "ManagedIdentityClientId": "",
+    "CacheKeySystemApi": "SystemApiToken"
+  }
+}

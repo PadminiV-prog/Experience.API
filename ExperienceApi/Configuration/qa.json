@@ -1,0 +1,16 @@
+{
+  "AppSettings": {
+    "KeyVaultUri": "",
+    "SystemApiBaseUrl": "https://qa-system-api.azure-api.net",
+    "SystemApiSubscriptionKey": "",
+    "SystemApiVersion": "v1",
+    "B2BTenantId": "",
+    "B2BTenantAuthorityUrl": "https://login.microsoftonline.com/{qa-tenant-id}",
+    "B2BClientId": "",
+    "B2BClientSecret": "",
+    "BlobEndpoint": "https://qastorage.blob.core.windows.net",
+    "BlobContainerName": "experience-qa",
+    "ManagedIdentityClientId": "",
+    "CacheKeySystemApi": "SystemApiToken"
+  }
+}
