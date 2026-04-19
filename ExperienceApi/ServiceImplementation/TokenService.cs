@@ -35,7 +35,13 @@ public class TokenService : ITokenService
         var authResult = await app.AcquireTokenForClient(new[] { model.Scope }).ExecuteAsync();
         var token = authResult.AccessToken;
 
-        _memoryCache.Set(model.CacheKey, token, authResult.ExpiresOn - DateTimeOffset.UtcNow - TimeSpan.FromMinutes(5));
+        var cacheDuration = authResult.ExpiresOn - DateTimeOffset.UtcNow - TimeSpan.FromMinutes(5);
+        if (cacheDuration <= TimeSpan.Zero)
+        {
+            cacheDuration = TimeSpan.FromMinutes(1);
+        }
+
+        _memoryCache.Set(model.CacheKey, token, cacheDuration);
 
         return token;
     }

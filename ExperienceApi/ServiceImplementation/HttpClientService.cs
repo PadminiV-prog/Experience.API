@@ -17,22 +17,26 @@ public class HttpClientService : IHttpClientService
     public async Task<string> PostAsync(ClientRequestModel model, string token, string correlationId, string sourceId)
     {
         var httpClient = _httpClientFactory.CreateClient("ExperienceApiHttpClient");
-
-        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        httpClient.DefaultRequestHeaders.Remove(ApplicationConstants.CorrelationIdHeaderKey);
-        httpClient.DefaultRequestHeaders.Remove(ApplicationConstants.SourceIdHeaderKey);
-        httpClient.DefaultRequestHeaders.Remove("Ocp-Apim-Subscription-Key");
-        httpClient.DefaultRequestHeaders.Remove("api-version");
-
-        httpClient.DefaultRequestHeaders.TryAddWithoutValidation(ApplicationConstants.CorrelationIdHeaderKey, correlationId);
-        httpClient.DefaultRequestHeaders.TryAddWithoutValidation(ApplicationConstants.SourceIdHeaderKey, sourceId);
-        httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Ocp-Apim-Subscription-Key", model.SubscriptionKey);
-        httpClient.DefaultRequestHeaders.TryAddWithoutValidation("api-version", model.ApiVersion);
-
         var requestUri = BuildRequestUri(model.BaseUrl, model.Url, model.ApiVersion);
-        var content = new StringContent(model.Data, Encoding.UTF8, "application/json");
+        using var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
+        {
+            Content = new StringContent(model.Data, Encoding.UTF8, "application/json")
+        };
 
-        var response = await httpClient.PostAsync(requestUri, content);
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        request.Headers.TryAddWithoutValidation(ApplicationConstants.CorrelationIdHeaderKey, correlationId);
+        request.Headers.TryAddWithoutValidation(ApplicationConstants.SourceIdHeaderKey, sourceId);
+        request.Headers.TryAddWithoutValidation("Ocp-Apim-Subscription-Key", model.SubscriptionKey);
+        request.Headers.TryAddWithoutValidation("api-version", model.ApiVersion);
+
+        using var response = await httpClient.SendAsync(request);
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorBody = await response.Content.ReadAsStringAsync();
+            throw new HttpRequestException(
+                $"Downstream API request failed. StatusCode={(int)response.StatusCode}, Route={model.Url}, Body={errorBody}");
+        }
+
         return await response.Content.ReadAsStringAsync();
     }
 

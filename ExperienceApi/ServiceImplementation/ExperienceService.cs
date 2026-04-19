@@ -61,8 +61,8 @@ public class ExperienceService : IExperienceService
 
         var blobServiceClient = new BlobServiceClient(new Uri(_appSettings.BlobEndpoint), managedIdentityCredential);
         var blobClient = blobServiceClient.GetBlobContainerClient(containerName).GetBlobClient(blobName);
-        var downloadResult = await blobClient.DownloadContentAsync();
-
-        return downloadResult.Value.Content.ToString();
+        var downloadResult = await blobClient.DownloadStreamingAsync();
+        using var reader = new StreamReader(downloadResult.Value.Content);
+        return await reader.ReadToEndAsync();
     }
 }

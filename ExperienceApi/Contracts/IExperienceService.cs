@@ -15,4 +15,12 @@ public interface IExperienceService
     /// <param name="sourceId">The source identifier.</param>
     /// <returns>The response content from the downstream system.</returns>
     Task<string> ProcessRequestAsync(ExperienceRequest request, string correlationId, string sourceId);
+
+    /// <summary>
+    /// Reads a CSV file from Azure Blob storage.
+    /// </summary>
+    /// <param name="containerName">The blob container name.</param>
+    /// <param name="blobName">The blob file name.</param>
+    /// <returns>The CSV file content as a string.</returns>
+    Task<string> ReadCsvFromBlobAsync(string containerName, string blobName);
 }

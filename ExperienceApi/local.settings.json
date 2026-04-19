@@ -11,7 +11,7 @@
     "SystemApiSubscriptionKey": "",
     "SystemApiVersion": "v1",
     "B2BTenantId": "",
-    "B2BTenantAuthorityUrl": "https://login.microsoftonline.com/your-tenant-id",
+    "B2BTenantAuthorityUrl": "https://login.microsoftonline.com/{your-tenant-id}",
     "B2BClientId": "",
     "B2BClientSecret": "",
     "BlobEndpoint": "https://example.blob.core.windows.net",
