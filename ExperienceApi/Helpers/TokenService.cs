@@ -3,7 +3,7 @@ using ExperienceApi.Model;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Identity.Client;
 
-namespace ExperienceApi.ServiceImplementation;
+namespace ExperienceApi.Helpers;
 
 public class TokenService : ITokenService
 {

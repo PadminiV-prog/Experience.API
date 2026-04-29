@@ -13,7 +13,6 @@ public interface IHttpClientService
     /// <param name="model">Request model containing URL and payload details.</param>
     /// <param name="token">Bearer token for authorization.</param>
     /// <param name="correlationId">Correlation identifier header value.</param>
-    /// <param name="sourceId">Source identifier header value.</param>
     /// <returns>The raw response content.</returns>
-    Task<string> PostAsync(ClientRequestModel model, string token, string correlationId, string sourceId);
+    Task<string> PostAsync(ClientRequestModel model, string token, string correlationId);
 }

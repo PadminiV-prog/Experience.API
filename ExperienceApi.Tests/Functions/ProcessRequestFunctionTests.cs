@@ -20,14 +20,13 @@ public class ProcessRequestFunctionTests
         var requestPayload = new ExperienceRequest { Route = "orders/process", Payload = new { orderId = "1" } };
         var request = fixture.CreateHttpRequest(JsonConvert.SerializeObject(requestPayload));
         fixture.FunctionContext.Items[ApplicationConstants.CorrelationIdHeaderKey] = "corr-1";
-        fixture.FunctionContext.Items[ApplicationConstants.SourceIdHeaderKey] = "DC";
 
         fixture.ValidationServiceMock
             .Setup(x => x.ValidateRequestAsync(It.IsAny<ExperienceRequest>()))
             .ReturnsAsync(true);
 
         fixture.ExperienceServiceMock
-            .Setup(x => x.ProcessRequestAsync(It.IsAny<ExperienceRequest>(), "corr-1", "DC"))
+            .Setup(x => x.ProcessRequestAsync(It.IsAny<ExperienceRequest>(), "corr-1"))
             .ReturnsAsync("{\"status\":\"ok\"}");
 
         var response = await function.Run(request, fixture.FunctionContext);
@@ -63,14 +62,13 @@ public class ProcessRequestFunctionTests
         var requestPayload = new ExperienceRequest { Route = "orders/process", Payload = new { orderId = "1" } };
         var request = fixture.CreateHttpRequest(JsonConvert.SerializeObject(requestPayload));
         fixture.FunctionContext.Items[ApplicationConstants.CorrelationIdHeaderKey] = "corr-1";
-        fixture.FunctionContext.Items[ApplicationConstants.SourceIdHeaderKey] = "DC";
 
         fixture.ValidationServiceMock
             .Setup(x => x.ValidateRequestAsync(It.IsAny<ExperienceRequest>()))
             .ReturnsAsync(true);
 
         fixture.ExperienceServiceMock
-            .Setup(x => x.ProcessRequestAsync(It.IsAny<ExperienceRequest>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Setup(x => x.ProcessRequestAsync(It.IsAny<ExperienceRequest>(), It.IsAny<string>()))
             .ThrowsAsync(new InvalidOperationException("failure"));
 
         var response = await function.Run(request, fixture.FunctionContext);

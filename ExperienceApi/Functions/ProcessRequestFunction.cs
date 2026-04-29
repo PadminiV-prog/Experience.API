@@ -45,10 +45,6 @@ public class ProcessRequestFunction
             ? correlation?.ToString() ?? Guid.NewGuid().ToString()
             : Guid.NewGuid().ToString();
 
-        var sourceId = executionContext.Items.TryGetValue(ApplicationConstants.SourceIdHeaderKey, out var source)
-            ? source?.ToString() ?? ApplicationConstants.DefaultSourceId
-            : ApplicationConstants.DefaultSourceId;
-
         try
         {
             string requestBody;
@@ -68,7 +64,7 @@ public class ProcessRequestFunction
                 return await CreateResponseAsync(req, HttpStatusCode.BadRequest, "Invalid request payload.");
             }
 
-            var serviceResponse = await _experienceService.ProcessRequestAsync(request, correlationId, sourceId);
+            var serviceResponse = await _experienceService.ProcessRequestAsync(request, correlationId);
             if (string.Equals(serviceResponse, "NoResponse", StringComparison.OrdinalIgnoreCase))
             {
                 return await CreateResponseAsync(req, HttpStatusCode.InternalServerError, "No response from downstream service.");

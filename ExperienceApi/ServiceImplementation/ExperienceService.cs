@@ -23,7 +23,7 @@ public class ExperienceService : IExperienceService
         _httpClientService = httpClientService;
     }
 
-    public async Task<string> ProcessRequestAsync(ExperienceRequest request, string correlationId, string sourceId)
+    public async Task<string> ProcessRequestAsync(ExperienceRequest request, string correlationId)
     {
         var requestData = JsonConvert.SerializeObject(request);
 
@@ -41,12 +41,11 @@ public class ExperienceService : IExperienceService
                 : _appSettings.CacheKeySystemApi,
             Scope = $"api://{_appSettings.B2BClientId}/.default",
             Data = requestData,
-            CorrelationId = correlationId,
-            SourceId = sourceId
+            CorrelationId = correlationId
         };
 
         var token = await _tokenService.GetTokenAsync(clientRequestModel);
-        var response = await _httpClientService.PostAsync(clientRequestModel, token, correlationId, sourceId);
+        var response = await _httpClientService.PostAsync(clientRequestModel, token, correlationId);
 
         return string.IsNullOrWhiteSpace(response) ? "NoResponse" : response;
     }

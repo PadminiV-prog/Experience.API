@@ -2,6 +2,7 @@ using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 using ExperienceApi;
 using ExperienceApi.Contracts;
+using ExperienceApi.Helpers;
 using ExperienceApi.Middleware;
 using ExperienceApi.ServiceImplementation;
 using Microsoft.Azure.Functions.Worker;

@@ -3,7 +3,7 @@ using ExperienceApi.Model;
 using System.Net.Http.Headers;
 using System.Text;
 
-namespace ExperienceApi.ServiceImplementation;
+namespace ExperienceApi.Helpers;
 
 public class HttpClientService : IHttpClientService
 {
@@ -14,7 +14,7 @@ public class HttpClientService : IHttpClientService
         _httpClientFactory = httpClientFactory;
     }
 
-    public async Task<string> PostAsync(ClientRequestModel model, string token, string correlationId, string sourceId)
+    public async Task<string> PostAsync(ClientRequestModel model, string token, string correlationId)
     {
         var httpClient = _httpClientFactory.CreateClient("ExperienceApiHttpClient");
         var requestUri = BuildRequestUri(model.BaseUrl, model.Url, model.ApiVersion);
@@ -25,7 +25,6 @@ public class HttpClientService : IHttpClientService
 
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         request.Headers.TryAddWithoutValidation(ApplicationConstants.CorrelationIdHeaderKey, correlationId);
-        request.Headers.TryAddWithoutValidation(ApplicationConstants.SourceIdHeaderKey, sourceId);
         request.Headers.TryAddWithoutValidation("Ocp-Apim-Subscription-Key", model.SubscriptionKey);
         request.Headers.TryAddWithoutValidation("api-version", model.ApiVersion);
 

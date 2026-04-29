@@ -1,7 +1,7 @@
 using ExperienceApi.Contracts;
 using ExperienceApi.Model;
 
-namespace ExperienceApi.ServiceImplementation;
+namespace ExperienceApi.Helpers;
 
 public class ValidationService : IValidationService
 {

@@ -14,11 +14,7 @@ public class RequestHeaderMiddleware : IFunctionsWorkerMiddleware
         var correlationId = GetHeaderValue(requestData, ApplicationConstants.CorrelationIdHeaderKey)
                             ?? Guid.NewGuid().ToString();
 
-        var sourceId = GetHeaderValue(requestData, ApplicationConstants.SourceIdHeaderKey)
-                       ?? ApplicationConstants.DefaultSourceId;
-
         context.Items[ApplicationConstants.CorrelationIdHeaderKey] = correlationId;
-        context.Items[ApplicationConstants.SourceIdHeaderKey] = sourceId;
 
         await next(context);
     }

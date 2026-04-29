@@ -22,7 +22,5 @@ public class ClientRequestModel
 
     public string CorrelationId { get; set; } = string.Empty;
 
-    public string SourceId { get; set; } = string.Empty;
-
     public string BaseUrl { get; set; } = string.Empty;
 }

@@ -29,7 +29,6 @@ public sealed class TestFixture
     {
         var request = new FakeHttpRequestData(FunctionContext, body);
         request.Headers.Add("x-correlation-id", "test-correlation-id");
-        request.Headers.Add("x-source-id", "DC");
         return request;
     }
 
