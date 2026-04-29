@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Experience.API": {
+      "commandName": "Project",
+      "commandLineArgs": "start",
+      "launchBrowser": false,
+      "environmentVariables": {
+        "AZURE_FUNCTIONS_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

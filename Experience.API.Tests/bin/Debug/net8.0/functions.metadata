@@ -1,0 +1,29 @@
+[
+  {
+    "name": "ExperienceFunction",
+    "scriptFile": "Experience.API.dll",
+    "entryPoint": "Experience.API.Functions.ExperienceFunction.RunAsync",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "req",
+        "direction": "In",
+        "type": "httpTrigger",
+        "authLevel": "Function",
+        "methods": [
+          "post"
+        ],
+        "route": "experience",
+        "properties": {}
+      },
+      {
+        "name": "$return",
+        "type": "http",
+        "direction": "Out"
+      }
+    ]
+  }
+]
