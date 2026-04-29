@@ -1,6 +1,5 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
-using Experience.API.Configuration;
 using Experience.API.Contract;
 using Microsoft.Extensions.Logging;
 

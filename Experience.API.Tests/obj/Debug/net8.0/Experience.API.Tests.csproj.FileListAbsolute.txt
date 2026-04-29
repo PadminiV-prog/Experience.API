@@ -157,3 +157,5 @@
 /home/runner/work/Experience.API/Experience.API/Experience.API.Tests/obj/Debug/net8.0/Experience.API.Tests.pdb
 /home/runner/work/Experience.API/Experience.API/Experience.API.Tests/obj/Debug/net8.0/Experience.API.Tests.genruntimeconfig.cache
 /home/runner/work/Experience.API/Experience.API/Experience.API.Tests/obj/Debug/net8.0/ref/Experience.API.Tests.dll
+/home/runner/work/Experience.API/Experience.API/Experience.API.Tests/bin/Debug/net8.0/Configuration/dev.json
+/home/runner/work/Experience.API/Experience.API/Experience.API.Tests/bin/Debug/net8.0/Configuration/qa.json

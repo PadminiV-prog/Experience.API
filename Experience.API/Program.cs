@@ -1,4 +1,4 @@
-using Experience.API.Configuration;
+using Experience.API;
 using Experience.API.Contract;
 using Experience.API.Helpers;
 using Experience.API.Middleware;
@@ -15,6 +15,8 @@ var host = new HostBuilder()
     })
     .ConfigureAppConfiguration((context, config) =>
     {
+        var env = context.HostingEnvironment.EnvironmentName.ToLowerInvariant();
+        config.AddJsonFile($"Configuration/{env}.json", optional: true, reloadOnChange: false);
         config.AddEnvironmentVariables();
     })
     .ConfigureServices((context, services) =>

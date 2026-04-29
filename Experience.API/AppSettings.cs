@@ -1,4 +1,4 @@
-namespace Experience.API.Configuration
+namespace Experience.API
 {
     public class AppSettings
     {
