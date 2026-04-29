@@ -1,3 +1,4 @@
+using Experience.API.Contract;
 using Experience.API.Model;
 using Microsoft.Extensions.Logging;
 

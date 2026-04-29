@@ -1,5 +1,4 @@
 using Experience.API.Contract;
-using Experience.API.Helpers;
 using Experience.API.Model;
 using Microsoft.Extensions.Logging;
 
@@ -10,20 +9,17 @@ namespace Experience.API.ServiceImplementation
         private readonly IHttpClientService _httpClientService;
         private readonly ITokenService _tokenService;
         private readonly IValidationService _validationService;
-        private readonly ITransformAdapter _transformAdapter;
         private readonly ILogger<ExperienceService> _logger;
 
         public ExperienceService(
             IHttpClientService httpClientService,
             ITokenService tokenService,
             IValidationService validationService,
-            ITransformAdapter transformAdapter,
             ILogger<ExperienceService> logger)
         {
             _httpClientService = httpClientService;
             _tokenService = tokenService;
             _validationService = validationService;
-            _transformAdapter = transformAdapter;
             _logger = logger;
         }
 
@@ -45,23 +41,20 @@ namespace Experience.API.ServiceImplementation
             }
 
             var accessToken = await _tokenService.GetAccessTokenAsync();
-            var transformedPayload = await _transformAdapter.TransformRequestAsync(request.Payload, request.CorrelationId);
 
             _logger.LogInformation("Calling downstream service. CorrelationId: {CorrelationId}", request.CorrelationId);
             var downstreamResponse = await _httpClientService.PostAsync(
                 "/api/process",
-                transformedPayload,
+                request.Payload,
                 accessToken,
                 request.CorrelationId);
-
-            var transformedResponse = await _transformAdapter.TransformResponseAsync(downstreamResponse, request.CorrelationId);
 
             return new ExperienceResponse
             {
                 CorrelationId = request.CorrelationId,
                 IsSuccess = true,
                 Message = "Request processed successfully.",
-                Data = transformedResponse
+                Data = downstreamResponse
             };
         }
     }

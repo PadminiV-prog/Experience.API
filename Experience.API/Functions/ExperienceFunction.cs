@@ -1,7 +1,6 @@
 using System.Net;
 using System.Text.Json;
 using Experience.API.Contract;
-using Experience.API.Helpers;
 using Experience.API.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;

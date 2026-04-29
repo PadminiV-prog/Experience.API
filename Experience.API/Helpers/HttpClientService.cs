@@ -1,5 +1,6 @@
 using System.Net.Http.Headers;
 using System.Text;
+using Experience.API.Contract;
 using Microsoft.Extensions.Logging;
 
 namespace Experience.API.Helpers

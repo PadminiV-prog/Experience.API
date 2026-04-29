@@ -1,4 +1,4 @@
-namespace Experience.API.Helpers
+namespace Experience.API.Contract
 {
     public interface ITokenService
     {

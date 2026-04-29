@@ -1,6 +1,6 @@
 using Experience.API.Model;
 
-namespace Experience.API.Helpers
+namespace Experience.API.Contract
 {
     public interface IValidationService
     {

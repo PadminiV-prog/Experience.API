@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using Experience.API.Contract;
-using Experience.API.Helpers;
 using Experience.API.Model;
 using Xunit;
 

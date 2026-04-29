@@ -3,7 +3,6 @@ using Experience.API.Contract;
 using Experience.API.Helpers;
 using Experience.API.Middleware;
 using Experience.API.ServiceImplementation;
-using Experience.API.TransformAdapter;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,7 +27,6 @@ var host = new HostBuilder()
         services.AddHttpClient<ITokenService, TokenService>();
 
         services.AddSingleton<IValidationService, ValidationService>();
-        services.AddSingleton<ITransformAdapter, ExperienceTransformAdapter>();
         services.AddScoped<IExperienceService, ExperienceService>();
 
         services.AddApplicationInsightsTelemetryWorkerService();
