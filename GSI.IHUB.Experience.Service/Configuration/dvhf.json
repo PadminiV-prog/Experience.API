@@ -1,0 +1,16 @@
+{
+  "AppSettings": {
+    "KeyVaultUri": "",
+    "SystemApiBaseUrl": "https://dvhf-system-api.azure-api.net",
+    "SystemApiSubscriptionKey": "",
+    "SystemApiVersion": "v1",
+    "B2BTenantId": "",
+    "B2BTenantAuthorityUrl": "https://login.microsoftonline.com/{dvhf-tenant-id}",
+    "B2BClientId": "",
+    "B2BClientSecret": "",
+    "BlobEndpoint": "https://dvhfstorage.blob.core.windows.net",
+    "BlobContainerName": "experience-dvhf",
+    "ManagedIdentityClientId": "",
+    "CacheKeySystemApi": "SystemApiToken"
+  }
+}

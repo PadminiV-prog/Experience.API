@@ -1,0 +1,16 @@
+{
+  "AppSettings": {
+    "KeyVaultUri": "",
+    "SystemApiBaseUrl": "https://dr-system-api.azure-api.net",
+    "SystemApiSubscriptionKey": "",
+    "SystemApiVersion": "v1",
+    "B2BTenantId": "",
+    "B2BTenantAuthorityUrl": "https://login.microsoftonline.com/{dr-tenant-id}",
+    "B2BClientId": "",
+    "B2BClientSecret": "",
+    "BlobEndpoint": "https://drstorage.blob.core.windows.net",
+    "BlobContainerName": "experience-dr",
+    "ManagedIdentityClientId": "",
+    "CacheKeySystemApi": "SystemApiToken"
+  }
+}
