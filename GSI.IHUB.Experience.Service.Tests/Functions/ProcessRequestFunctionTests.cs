@@ -18,12 +18,13 @@ public class ProcessRequestFunctionTests
             fixture.ValidationServiceMock.Object);
 
         var requestPayload = new ExperienceRequest { Route = "orders/process", Payload = new { orderId = "1" } };
-        var request = fixture.CreateHttpRequest(JsonConvert.SerializeObject(requestPayload));
+        var requestBodyJson = JsonConvert.SerializeObject(requestPayload);
+        var request = fixture.CreateHttpRequest(requestBodyJson);
         fixture.FunctionContext.Items[ApplicationConstants.CorrelationIdHeaderKey] = "corr-1";
 
         fixture.ValidationServiceMock
-            .Setup(x => x.ValidateRequestAsync(It.IsAny<ExperienceRequest>()))
-            .ReturnsAsync(true);
+            .Setup(x => x.ValidateRequest(requestBodyJson))
+            .Returns(true);
 
         fixture.ExperienceServiceMock
             .Setup(x => x.ProcessRequestAsync(It.IsAny<ExperienceRequest>(), "corr-1"))
@@ -45,6 +46,10 @@ public class ProcessRequestFunctionTests
 
         var request = fixture.CreateHttpRequest(string.Empty);
 
+        fixture.ValidationServiceMock
+            .Setup(x => x.ValidateRequest(string.Empty))
+            .Returns(false);
+
         var response = await function.Run(request, fixture.FunctionContext);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -60,12 +65,13 @@ public class ProcessRequestFunctionTests
             fixture.ValidationServiceMock.Object);
 
         var requestPayload = new ExperienceRequest { Route = "orders/process", Payload = new { orderId = "1" } };
-        var request = fixture.CreateHttpRequest(JsonConvert.SerializeObject(requestPayload));
+        var requestBodyJson = JsonConvert.SerializeObject(requestPayload);
+        var request = fixture.CreateHttpRequest(requestBodyJson);
         fixture.FunctionContext.Items[ApplicationConstants.CorrelationIdHeaderKey] = "corr-1";
 
         fixture.ValidationServiceMock
-            .Setup(x => x.ValidateRequestAsync(It.IsAny<ExperienceRequest>()))
-            .ReturnsAsync(true);
+            .Setup(x => x.ValidateRequest(requestBodyJson))
+            .Returns(true);
 
         fixture.ExperienceServiceMock
             .Setup(x => x.ProcessRequestAsync(It.IsAny<ExperienceRequest>(), It.IsAny<string>()))

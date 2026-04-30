@@ -1,5 +1,3 @@
-using GSI.IHUB.Experience.Service.Model;
-
 namespace GSI.IHUB.Experience.Service.Contracts;
 
 /// <summary>
@@ -8,9 +6,9 @@ namespace GSI.IHUB.Experience.Service.Contracts;
 public interface IValidationService
 {
     /// <summary>
-    /// Validates the request payload.
+    /// Validates the raw request body string.
     /// </summary>
-    /// <param name="request">The incoming experience request.</param>
+    /// <param name="requestBody">The raw JSON request body.</param>
     /// <returns><c>true</c> when valid; otherwise, <c>false</c>.</returns>
-    Task<bool> ValidateRequestAsync(ExperienceRequest request);
+    bool ValidateRequest(string requestBody);
 }
