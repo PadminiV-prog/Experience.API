@@ -47,37 +47,29 @@ public class ProcessRequestFunction
 
         _logger.LogInformation("ProcessRequest function triggered. CorrelationId: {CorrelationId}", correlationId);
 
-        try
+        string requestBody;
+        using (var reader = new StreamReader(req.Body, Encoding.UTF8))
         {
-            string requestBody;
-            using (var reader = new StreamReader(req.Body, Encoding.UTF8))
-            {
-                requestBody = await reader.ReadToEndAsync();
-            }
-
-            if (!_validationService.ValidateRequest(requestBody))
-            {
-                _logger.LogWarning("Invalid request payload received. CorrelationId: {CorrelationId}", correlationId);
-                return await CreateProblemResponseAsync(req, HttpStatusCode.BadRequest, "Bad Request", "Invalid request payload.", correlationId);
-            }
-
-            var request = JsonConvert.DeserializeObject<ExperienceRequest>(requestBody)!;
-
-            var serviceResponse = await _experienceService.ProcessRequestAsync(request, correlationId);
-            if (string.Equals(serviceResponse, "NoResponse", StringComparison.OrdinalIgnoreCase))
-            {
-                _logger.LogWarning("No response received from downstream service. CorrelationId: {CorrelationId}", correlationId);
-                return await CreateProblemResponseAsync(req, HttpStatusCode.InternalServerError, "Internal Server Error", "No response from downstream service.", correlationId);
-            }
-
-            _logger.LogInformation("ProcessRequest completed successfully. CorrelationId: {CorrelationId}", correlationId);
-            return await CreateResponseAsync(req, HttpStatusCode.OK, serviceResponse);
+            requestBody = await reader.ReadToEndAsync();
         }
-        catch (Exception ex)
+
+        if (!_validationService.ValidateRequest(requestBody))
         {
-            _logger.LogError(ex, "An error occurred while processing the request. CorrelationId: {CorrelationId}", correlationId);
-            return await CreateProblemResponseAsync(req, HttpStatusCode.InternalServerError, "Internal Server Error", "An internal server error occurred.", correlationId);
+            _logger.LogWarning("Invalid request payload received. CorrelationId: {CorrelationId}", correlationId);
+            return await CreateProblemResponseAsync(req, HttpStatusCode.BadRequest, "Bad Request", "Invalid request payload.", correlationId);
         }
+
+        var request = JsonConvert.DeserializeObject<ExperienceRequest>(requestBody)!;
+
+        var serviceResponse = await _experienceService.ProcessRequestAsync(request, correlationId);
+        if (string.Equals(serviceResponse, "NoResponse", StringComparison.OrdinalIgnoreCase))
+        {
+            _logger.LogWarning("No response received from downstream service. CorrelationId: {CorrelationId}", correlationId);
+            return await CreateProblemResponseAsync(req, HttpStatusCode.InternalServerError, "Internal Server Error", "No response from downstream service.", correlationId);
+        }
+
+        _logger.LogInformation("ProcessRequest completed successfully. CorrelationId: {CorrelationId}", correlationId);
+        return await CreateResponseAsync(req, HttpStatusCode.OK, serviceResponse);
     }
 
     private static async Task<HttpResponseData> CreateResponseAsync(HttpRequestData request, HttpStatusCode statusCode, string payload)

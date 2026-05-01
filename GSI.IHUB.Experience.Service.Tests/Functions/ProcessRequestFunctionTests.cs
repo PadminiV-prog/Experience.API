@@ -63,7 +63,7 @@ public class ProcessRequestFunctionTests
     }
 
     [Fact]
-    public async Task ProcessRequest_ServiceThrowsException_ReturnsInternalServerError_WithProblemDetails()
+    public async Task ProcessRequest_ServiceThrowsException_ExceptionPropagates()
     {
         var fixture = new TestFixture();
         var function = new ProcessRequestFunction(
@@ -84,15 +84,7 @@ public class ProcessRequestFunctionTests
             .Setup(x => x.ProcessRequestAsync(It.IsAny<ExperienceRequest>(), It.IsAny<string>()))
             .ThrowsAsync(new InvalidOperationException("failure"));
 
-        var response = await function.Run(request, fixture.FunctionContext);
-
-        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-
-        var problem = ReadProblemDetails(response);
-        Assert.Equal(500, problem.Status);
-        Assert.Equal("Internal Server Error", problem.Title);
-        Assert.False(string.IsNullOrWhiteSpace(problem.Detail));
-        Assert.Equal("corr-1", problem.CorrelationId);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => function.Run(request, fixture.FunctionContext));
     }
 
     private static ExperienceProblemDetails ReadProblemDetails(Microsoft.Azure.Functions.Worker.Http.HttpResponseData response)

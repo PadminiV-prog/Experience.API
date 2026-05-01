@@ -43,6 +43,7 @@ var host = new HostBuilder()
     })
     .ConfigureFunctionsWebApplication(worker =>
     {
+        worker.UseMiddleware<ExceptionHandlingMiddleware>();
         worker.UseMiddleware<RequestHeaderMiddleware>();
     })
     .ConfigureServices((context, services) =>
