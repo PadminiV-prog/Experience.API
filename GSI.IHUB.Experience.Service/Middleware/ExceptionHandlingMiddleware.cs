@@ -1,9 +1,9 @@
+using GSI.IHUB.Experience.Service.Helpers;
 using GSI.IHUB.Experience.Service.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System.Net;
 
 namespace GSI.IHUB.Experience.Service.Middleware;
@@ -51,19 +51,12 @@ public class ExceptionHandlingMiddleware : IFunctionsWorkerMiddleware
                 return;
             }
 
-            var problem = new ExperienceProblemDetails
-            {
-                Type = "https://tools.ietf.org/html/rfc9110#section-15.6.1",
-                Title = "Internal Server Error",
-                Status = (int)HttpStatusCode.InternalServerError,
-                Detail = "An internal server error occurred.",
-                Instance = requestData.Url.AbsolutePath,
-                CorrelationId = correlationId
-            };
-
-            var response = requestData.CreateResponse(HttpStatusCode.InternalServerError);
-            response.Headers.Add("Content-Type", "application/problem+json; charset=utf-8");
-            await response.WriteStringAsync(JsonConvert.SerializeObject(problem));
+            var response = await ProblemDetailsResponseHelper.CreateProblemResponseAsync(
+                requestData,
+                HttpStatusCode.InternalServerError,
+                "Internal Server Error",
+                "An internal server error occurred.",
+                correlationId);
 
             context.GetInvocationResult().Value = response;
         }

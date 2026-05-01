@@ -1,4 +1,5 @@
 using GSI.IHUB.Experience.Service.Contracts;
+using GSI.IHUB.Experience.Service.Helpers;
 using GSI.IHUB.Experience.Service.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -56,7 +57,7 @@ public class ProcessRequestFunction
         if (!_validationService.ValidateRequest(requestBody))
         {
             _logger.LogWarning("Invalid request payload received. CorrelationId: {CorrelationId}", correlationId);
-            return await CreateProblemResponseAsync(req, HttpStatusCode.BadRequest, "Bad Request", "Invalid request payload.", correlationId);
+            return await ProblemDetailsResponseHelper.CreateProblemResponseAsync(req, HttpStatusCode.BadRequest, "Bad Request", "Invalid request payload.", correlationId);
         }
 
         var request = JsonConvert.DeserializeObject<ExperienceRequest>(requestBody)!;
@@ -65,7 +66,7 @@ public class ProcessRequestFunction
         if (string.Equals(serviceResponse, "NoResponse", StringComparison.OrdinalIgnoreCase))
         {
             _logger.LogWarning("No response received from downstream service. CorrelationId: {CorrelationId}", correlationId);
-            return await CreateProblemResponseAsync(req, HttpStatusCode.InternalServerError, "Internal Server Error", "No response from downstream service.", correlationId);
+            return await ProblemDetailsResponseHelper.CreateProblemResponseAsync(req, HttpStatusCode.InternalServerError, "Internal Server Error", "No response from downstream service.", correlationId);
         }
 
         _logger.LogInformation("ProcessRequest completed successfully. CorrelationId: {CorrelationId}", correlationId);
@@ -78,36 +79,4 @@ public class ProcessRequestFunction
         await response.WriteStringAsync(payload);
         return response;
     }
-
-    private static async Task<HttpResponseData> CreateProblemResponseAsync(
-        HttpRequestData request,
-        HttpStatusCode statusCode,
-        string title,
-        string detail,
-        string correlationId)
-    {
-        var problem = new ExperienceProblemDetails
-        {
-            Type = GetProblemType(statusCode),
-            Title = title,
-            Status = (int)statusCode,
-            Detail = detail,
-            Instance = request.Url.AbsolutePath,
-            CorrelationId = correlationId
-        };
-
-        var response = request.CreateResponse(statusCode);
-        response.Headers.Add("Content-Type", "application/problem+json; charset=utf-8");
-        await response.WriteStringAsync(JsonConvert.SerializeObject(problem));
-        return response;
-    }
-
-    private static string GetProblemType(HttpStatusCode statusCode) => statusCode switch
-    {
-        HttpStatusCode.BadRequest => "https://tools.ietf.org/html/rfc9110#section-15.5.1",
-        HttpStatusCode.Unauthorized => "https://tools.ietf.org/html/rfc9110#section-15.5.2",
-        HttpStatusCode.Forbidden => "https://tools.ietf.org/html/rfc9110#section-15.5.4",
-        HttpStatusCode.InternalServerError => "https://tools.ietf.org/html/rfc9110#section-15.6.1",
-        _ => "about:blank"
-    };
 }
