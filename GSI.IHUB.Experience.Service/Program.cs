@@ -1,11 +1,13 @@
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 using GSI.IHUB.Experience.Service;
+using GSI.IHUB.Experience.Service.Configuration;
 using GSI.IHUB.Experience.Service.Contracts;
 using GSI.IHUB.Experience.Service.Helpers;
 using GSI.IHUB.Experience.Service.Middleware;
 using GSI.IHUB.Experience.Service.ServiceImplementation;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -53,6 +55,8 @@ var host = new HostBuilder()
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IHttpClientService, HttpClientService>();
         services.AddScoped<IExperienceService, ExperienceService>();
+
+        services.AddSingleton<IOpenApiConfigurationOptions, ExperienceOpenApiConfigurationOptions>();
 
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
