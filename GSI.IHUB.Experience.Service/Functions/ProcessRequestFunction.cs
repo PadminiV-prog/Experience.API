@@ -33,10 +33,10 @@ public class ProcessRequestFunction
     [OpenApiSecurity("BearerAuth", SecuritySchemeType.Http, Scheme = OpenApiSecuritySchemeType.Bearer, BearerFormat = "JWT")]
     [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(ExperienceRequest), Required = true)]
     [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(string), Summary = "Successful response")]
-    [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(string), Summary = "Bad request")]
-    [OpenApiResponseWithBody(statusCode: HttpStatusCode.Unauthorized, contentType: "application/json", bodyType: typeof(string), Summary = "Unauthorized")]
-    [OpenApiResponseWithBody(statusCode: HttpStatusCode.Forbidden, contentType: "application/json", bodyType: typeof(string), Summary = "Forbidden")]
-    [OpenApiResponseWithBody(statusCode: HttpStatusCode.InternalServerError, contentType: "application/json", bodyType: typeof(string), Summary = "Server error")]
+    [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/problem+json", bodyType: typeof(ExperienceProblemDetails), Summary = "Bad request")]
+    [OpenApiResponseWithBody(statusCode: HttpStatusCode.Unauthorized, contentType: "application/problem+json", bodyType: typeof(ExperienceProblemDetails), Summary = "Unauthorized")]
+    [OpenApiResponseWithBody(statusCode: HttpStatusCode.Forbidden, contentType: "application/problem+json", bodyType: typeof(ExperienceProblemDetails), Summary = "Forbidden")]
+    [OpenApiResponseWithBody(statusCode: HttpStatusCode.InternalServerError, contentType: "application/problem+json", bodyType: typeof(ExperienceProblemDetails), Summary = "Server error")]
     public async Task<HttpResponseData> Run(
         [HttpTrigger(AuthorizationLevel.Function, "post", Route = "experience/process")] HttpRequestData req,
         FunctionContext executionContext)
@@ -58,7 +58,7 @@ public class ProcessRequestFunction
             if (!_validationService.ValidateRequest(requestBody))
             {
                 _logger.LogWarning("Invalid request payload received. CorrelationId: {CorrelationId}", correlationId);
-                return await CreateResponseAsync(req, HttpStatusCode.BadRequest, "Invalid request payload.");
+                return await CreateProblemResponseAsync(req, HttpStatusCode.BadRequest, "Bad Request", "Invalid request payload.", correlationId);
             }
 
             var request = JsonConvert.DeserializeObject<ExperienceRequest>(requestBody)!;
@@ -67,7 +67,7 @@ public class ProcessRequestFunction
             if (string.Equals(serviceResponse, "NoResponse", StringComparison.OrdinalIgnoreCase))
             {
                 _logger.LogWarning("No response received from downstream service. CorrelationId: {CorrelationId}", correlationId);
-                return await CreateResponseAsync(req, HttpStatusCode.InternalServerError, "No response from downstream service.");
+                return await CreateProblemResponseAsync(req, HttpStatusCode.InternalServerError, "Internal Server Error", "No response from downstream service.", correlationId);
             }
 
             _logger.LogInformation("ProcessRequest completed successfully. CorrelationId: {CorrelationId}", correlationId);
@@ -76,7 +76,7 @@ public class ProcessRequestFunction
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while processing the request. CorrelationId: {CorrelationId}", correlationId);
-            return await CreateResponseAsync(req, HttpStatusCode.InternalServerError, "An internal server error occurred.");
+            return await CreateProblemResponseAsync(req, HttpStatusCode.InternalServerError, "Internal Server Error", "An internal server error occurred.", correlationId);
         }
     }
 
@@ -86,4 +86,36 @@ public class ProcessRequestFunction
         await response.WriteStringAsync(payload);
         return response;
     }
+
+    private static async Task<HttpResponseData> CreateProblemResponseAsync(
+        HttpRequestData request,
+        HttpStatusCode statusCode,
+        string title,
+        string detail,
+        string correlationId)
+    {
+        var problem = new ExperienceProblemDetails
+        {
+            Type = GetProblemType(statusCode),
+            Title = title,
+            Status = (int)statusCode,
+            Detail = detail,
+            Instance = request.Url.AbsolutePath,
+            CorrelationId = correlationId
+        };
+
+        var response = request.CreateResponse(statusCode);
+        response.Headers.Add("Content-Type", "application/problem+json; charset=utf-8");
+        await response.WriteStringAsync(JsonConvert.SerializeObject(problem));
+        return response;
+    }
+
+    private static string GetProblemType(HttpStatusCode statusCode) => statusCode switch
+    {
+        HttpStatusCode.BadRequest => "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+        HttpStatusCode.Unauthorized => "https://tools.ietf.org/html/rfc9110#section-15.5.2",
+        HttpStatusCode.Forbidden => "https://tools.ietf.org/html/rfc9110#section-15.5.4",
+        HttpStatusCode.InternalServerError => "https://tools.ietf.org/html/rfc9110#section-15.6.1",
+        _ => "about:blank"
+    };
 }

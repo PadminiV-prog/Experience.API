@@ -36,7 +36,7 @@ public class ProcessRequestFunctionTests
     }
 
     [Fact]
-    public async Task ProcessRequest_EmptyBody_ReturnsBadRequest()
+    public async Task ProcessRequest_EmptyBody_ReturnsBadRequest_WithProblemDetails()
     {
         var fixture = new TestFixture();
         var function = new ProcessRequestFunction(
@@ -45,6 +45,7 @@ public class ProcessRequestFunctionTests
             fixture.ValidationServiceMock.Object);
 
         var request = fixture.CreateHttpRequest(string.Empty);
+        fixture.FunctionContext.Items[ApplicationConstants.CorrelationIdHeaderKey] = "corr-bad";
 
         fixture.ValidationServiceMock
             .Setup(x => x.ValidateRequest(string.Empty))
@@ -53,10 +54,16 @@ public class ProcessRequestFunctionTests
         var response = await function.Run(request, fixture.FunctionContext);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var problem = ReadProblemDetails(response);
+        Assert.Equal(400, problem.Status);
+        Assert.Equal("Bad Request", problem.Title);
+        Assert.False(string.IsNullOrWhiteSpace(problem.Detail));
+        Assert.Equal("corr-bad", problem.CorrelationId);
     }
 
     [Fact]
-    public async Task ProcessRequest_ServiceThrowsException_ReturnsInternalServerError()
+    public async Task ProcessRequest_ServiceThrowsException_ReturnsInternalServerError_WithProblemDetails()
     {
         var fixture = new TestFixture();
         var function = new ProcessRequestFunction(
@@ -80,5 +87,19 @@ public class ProcessRequestFunctionTests
         var response = await function.Run(request, fixture.FunctionContext);
 
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+
+        var problem = ReadProblemDetails(response);
+        Assert.Equal(500, problem.Status);
+        Assert.Equal("Internal Server Error", problem.Title);
+        Assert.False(string.IsNullOrWhiteSpace(problem.Detail));
+        Assert.Equal("corr-1", problem.CorrelationId);
+    }
+
+    private static ExperienceProblemDetails ReadProblemDetails(Microsoft.Azure.Functions.Worker.Http.HttpResponseData response)
+    {
+        response.Body.Seek(0, SeekOrigin.Begin);
+        using var reader = new System.IO.StreamReader(response.Body, System.Text.Encoding.UTF8, leaveOpen: true);
+        var json = reader.ReadToEnd();
+        return JsonConvert.DeserializeObject<ExperienceProblemDetails>(json)!;
     }
 }
